@@ -1,0 +1,37 @@
+import os
+from rembg import remove
+from PIL import Image
+
+# Input directory containing the set of images to process
+input_dir = '/content/drive/MyDrive/09-01-2025'
+
+# Output directory to save the processed images (create this directory if it doesn't exist)
+output_dir = '/content/drive/MyDrive/09-01-2025/new'
+
+# Create the output directory if it doesn't exist
+os.makedirs(output_dir, exist_ok=True)
+
+# Green background color (you can change this to any other color)
+green_background_color = (0, 255, 0)
+
+# Loop through the images in the input directory
+for filename in os.listdir(input_dir):
+    if filename.endswith('.jpg') or filename.endswith('.png'):
+        # Load the current image
+        current_image_path = os.path.join(input_dir, filename)
+        current_image = Image.open(current_image_path)
+
+        # Remove the background using the rembg library
+        current_image_no_bg = remove(current_image, alpha=True)
+
+        # Create a new image with a green background
+        new_image = Image.new("RGB", current_image_no_bg.size, green_background_color)
+
+        # Paste the image with the original background removed onto the green background
+        new_image.paste(current_image_no_bg, (0, 0), current_image_no_bg)
+
+        # Save the processed image with the green background as JPEG
+        output_image_path = os.path.join(output_dir, filename.replace('.png', '.jpg'))  # Change the file extension to .jpg
+        new_image.save(output_image_path, format='JPEG')
+
+        print(f"Processed: {filename} -> Saved: {output_image_path}")
